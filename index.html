@@ -22,14 +22,17 @@
       zoom: 15
     });
 
+    let barMarkers = [];
+
     function getStatusColor(start, end) {
       if (!start || !end) return 'gray';
       const now = new Date();
       const pad = (n) => (n < 10 ? "0" + n : n);
       const nowStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const [startHour, startMin] = start.split(':').map(Number);
+      const [endHour, endMin] = end.split(':').map(Number);
 
       const soonStart = new Date();
-      const [startHour, startMin] = start.split(':').map(Number);
       soonStart.setHours(startHour, startMin - 30);
       const soonStr = `${pad(soonStart.getHours())}:${pad(soonStart.getMinutes())}`;
 
@@ -38,32 +41,45 @@
       return 'gray';
     }
 
+    function updateMarkerColors() {
+      barMarkers.forEach(marker => {
+        const { element, start, end } = marker;
+        const newColor = getStatusColor(start, end);
+        element.style.backgroundColor = newColor;
+      });
+    }
+
+    function createMarker(bar) {
+      const coords = bar.geometry.coordinates;
+      const props = bar.properties;
+      const color = getStatusColor(props.happyHourStart, props.happyHourEnd);
+
+      const el = document.createElement('div');
+      el.style.backgroundColor = color;
+      el.style.width = '20px';
+      el.style.height = '20px';
+      el.style.borderRadius = '50%';
+      el.style.border = '2px solid white';
+      el.style.boxShadow = '0 0 5px rgba(0,0,0,0.5)';
+
+      const marker = new maplibregl.Marker(el)
+        .setLngLat(coords)
+        .setPopup(new maplibregl.Popup({ offset: 25 })
+          .setHTML(`<strong>${props.name}</strong><br>
+                    Happy Hour: ${props.happyHourStart}–${props.happyHourEnd}<br>
+                    Deal: ${props.deal}`))
+        .addTo(map);
+
+      barMarkers.push({ element: el, start: props.happyHourStart, end: props.happyHourEnd });
+    }
+
     map.on('load', () => {
       fetch('bars.geojson')
         .then(res => res.json())
         .then(data => {
-          data.features.forEach(bar => {
-            const coords = bar.geometry.coordinates;
-            const props = bar.properties;
-
-            const color = getStatusColor(props.happyHourStart, props.happyHourEnd);
-
-            const marker = document.createElement('div');
-            marker.style.backgroundColor = color;
-            marker.style.width = '20px';
-            marker.style.height = '20px';
-            marker.style.borderRadius = '50%';
-            marker.style.border = '2px solid white';
-            marker.style.boxShadow = '0 0 5px rgba(0,0,0,0.5)';
-
-            new maplibregl.Marker(marker)
-              .setLngLat(coords)
-              .setPopup(new maplibregl.Popup({ offset: 25 })
-                .setHTML(`<strong>${props.name}</strong><br>
-                          Happy Hour: ${props.happyHourStart}–${props.happyHourEnd}<br>
-                          Deal: ${props.deal}`))
-              .addTo(map);
-          });
+          data.features.forEach(bar => createMarker(bar));
+          updateMarkerColors();
+          setInterval(updateMarkerColors, 60000); // update every minute
         })
         .catch(err => console.error("Error loading bars.geojson:", err));
     });
