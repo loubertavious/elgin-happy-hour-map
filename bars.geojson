@@ -1,0 +1,131 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Clocktower Brew Pub",
+        "deal": "2\u20135pm & after 9pm happy hour drinks"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6903,
+          45.4178
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Deacon Brodie\u2019s Whisky Bar",
+        "deal": "Lunch & 4\u20136pm: $7 beers, $10 triples"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6902,
+          45.418
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "The Gilmour",
+        "deal": "Beer specials all day"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6908,
+          45.4173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "The Standard Luxury Tavern",
+        "deal": "Margaritas & tacos specials"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6905,
+          45.4177
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "The Lieutenant\u2019s Pump",
+        "deal": "11\u20133pm: $15 burger & beer combo"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6904,
+          45.4176
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Happy Fish Elgin",
+        "deal": "Thu\u2013Sat: 9pm\u20132am lounge"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6906,
+          45.4179
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "The Waverley",
+        "deal": "Trendy spot, cocktails"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6907,
+          45.4182
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "CRAFT Beer Market",
+        "deal": "Daily: 2\u20135pm & 9pm\u2013close"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6839,
+          45.3994
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "The Royal Oak (Bank & Gloucester)",
+        "deal": "Mon\u2013Fri: 3\u20136pm $5.25 drinks"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.6909,
+          45.4174
+        ]
+      }
+    }
+  ]
+}
