@@ -36,15 +36,17 @@
 
       const soonStr = `${pad(soonStart.getHours())}:${pad(soonStart.getMinutes())}`;
 
-      if (nowStr >= startTime && nowStr <= endTime) return 'green';    // Happy Hour now
-      if (nowStr >= soonStr && nowStr < startTime) return 'yellow';    // Starting soon
-      return 'gray';                                                   // Not yet
+      if (nowStr >= startTime && nowStr <= endTime) return 'green';
+      if (nowStr >= soonStr && nowStr < startTime) return 'yellow';
+      return 'gray';
     }
 
     map.on('load', () => {
+      console.log("Map loaded, fetching bars.geojson...");
       fetch('bars.geojson')
         .then(res => res.json())
         .then(data => {
+          console.log("Loaded bar data:", data);
           data.features.forEach(bar => {
             const coords = bar.geometry.coordinates;
             const props = bar.properties;
