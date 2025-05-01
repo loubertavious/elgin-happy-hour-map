@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Elgin Street Happy Hour Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; display: flex; }
+    #sidebar {
+      width: 300px;
+      background: #f4f4f4;
+      overflow-y: auto;
+      padding: 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      font-family: sans-serif;
+    }
+    #sidebar h2 { text-align: center; }
+    .bar-entry {
+      padding: 8px;
+      margin: 8px 0;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .bar-entry:hover {
+      background: #eaeaea;
+    }
+    .status {
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    #map { flex: 1; }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h2>Elgin Happy Hours</h2>
+    <div id="bar-list"></div>
+  </div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+  <script>
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      center: [-75.6919, 45.4186],
+      zoom: 15
+    });
+
+    let barMarkers = [];
+
+    function getToday() {
+      return new Date().toLocaleDateString('en-CA', { weekday: 'long' });
+    }
+
+    function getStatusColorAndText(happyHours) {
+      const today = getToday();
+      if (!happyHours[today]) return { color: 'gray', status: 'No happy hour today' };
+
+      const start = happyHours[today].start;
+      const end = happyHours[today].end;
+      const now = new Date();
+      const pad = (n) => (n < 10 ? "0" + n : n);
+      const nowStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+      const [startHour, startMin] = start.split(':').map(Number);
+      const soonStart = new Date();
+      soonStart.setHours(startHour, startMin - 30);
+      const soonStr = `${pad(soonStart.getHours())}:${pad(soonStart.getMinutes())}`;
+
+      if (nowStr >= start && nowStr <= end) return { color: 'green', status: 'Happy Hour Now' };
+      if (nowStr >= soonStr && nowStr < start) return { color: 'yellow', status: 'Starting Soon' };
+      return { color: 'gray', status: 'Not Happy Hour' };
+    }
+
+    function updateMarkerColors() {
+      barMarkers.forEach(item => {
+        const { element, happyHours, sidebarStatus } = item;
+        const statusObj = getStatusColorAndText(happyHours);
+        element.style.backgroundColor = statusObj.color;
+        sidebarStatus.textContent = statusObj.status;
+      });
+    }
+
+    function createBarEntry(bar, marker) {
+      const entry = document.createElement('div');
+      entry.className = 'bar-entry';
+      entry.innerHTML = `<div><strong>${bar.properties.name}</strong></div>
+                         <div>${bar.properties.deal}</div>
+                         <div class="status">Loading...</div>`;
+
+      entry.addEventListener('click', () => {
+        map.flyTo({ center: bar.geometry.coordinates, zoom: 17 });
+        marker.togglePopup();
+      });
+
+      document.getElementById('bar-list').appendChild(entry);
+      return entry.querySelector('.status');
+    }
+
+    map.on('load', () => {
+      fetch('bars.geojson')
+        .then(res => res.json())
+        .then(data => {
+          data.features.forEach(bar => {
+            const coords = bar.geometry.coordinates;
+            const statusObj = getStatusColorAndText(bar.properties.happyHours);
+
+            const el = document.createElement('div');
+            el.style.backgroundColor = statusObj.color;
+            el.style.width = '20px';
+            el.style.height = '20px';
+            el.style.borderRadius = '50%';
+            el.style.border = '2px solid white';
+            el.style.boxShadow = '0 0 5px rgba(0,0,0,0.5)';
+
+            const marker = new maplibregl.Marker(el)
+              .setLngLat(coords)
+              .setPopup(new maplibregl.Popup({ offset: 25 })
+                .setHTML(`<strong>${bar.properties.name}</strong><br>
+                          Deal: ${bar.properties.deal}`))
+              .addTo(map);
+
+            const sidebarStatus = createBarEntry(bar, marker);
+            sidebarStatus.textContent = statusObj.status;
+
+            barMarkers.push({
+              element: el,
+              happyHours: bar.properties.happyHours,
+              sidebarStatus: sidebarStatus
+            });
+          });
+
+          setInterval(updateMarkerColors, 60000);
+        })
+        .catch(err => console.error("Error loading bars.geojson:", err));
+    });
+  </script>
+</body>
+</html>
