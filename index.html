@@ -36,7 +36,7 @@
           obj[header] = row[j] || '';
         });
 
-        if (!obj.Latitude || !obj.Longitude) return;
+        if (!obj.Latitude || !obj.Longitude) continue;
 
         features.push({
           type: 'Feature',
