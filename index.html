@@ -60,14 +60,10 @@
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNwlJRxfdrVG6ADRcRA2jJM8Y2M9BSAvd2O6sVoZPqceGXVhVdEBnhryhwp95A4RoS-a1hND217Pgw/pub?output=csv';
 
     function csvToGeoJson(csvText) {
-      const lines = csvText.trim().split('\n').join('
-').split('\n').join('
-').split('\n').join('
-').split('\n').join('
-').split('\n').join('
-').split('\n').join('
-').split('
-');
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  const features = [];
+const lines = csvText.trim().split('\n');
       const headers = lines[0].split(',').map(h => h.trim());
       const features = [];
 
