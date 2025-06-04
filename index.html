@@ -46,8 +46,15 @@
           obj[header] = row[j] || '';
         });
 
-        if (!obj.Address) continue;
-        const coords = await geocodeAddress(obj.Address);
+        let coords = null;
+        // Prefer coordinates if present and valid
+        if (obj.Latitude && obj.Longitude && !isNaN(obj.Latitude) && !isNaN(obj.Longitude)) {
+          coords = [parseFloat(obj.Longitude), parseFloat(obj.Latitude)];
+        } else if (obj.Address) {
+          coords = await geocodeAddress(obj.Address);
+          // To avoid rate limits, wait 1 second between requests
+          await new Promise(res => setTimeout(res, 1000));
+        }
         if (!coords) continue;
 
         features.push({
@@ -63,8 +70,6 @@
             coordinates: coords
           }
         });
-        // To avoid rate limits, wait 1 second between requests
-        await new Promise(res => setTimeout(res, 1000));
       }
 
       return {
