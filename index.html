@@ -48,20 +48,25 @@
 
         let coords = null;
         let source = '';
-        // Use coordinates if both are present and valid
+
+        // Prefer coordinates if both are present and valid
+        const lat = obj.Latitude && obj.Latitude.trim();
+        const lon = obj.Longitude && obj.Longitude.trim();
         if (
-          obj.Latitude && obj.Longitude &&
-          !isNaN(parseFloat(obj.Latitude)) && !isNaN(parseFloat(obj.Longitude))
+          lat && lon &&
+          !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lon))
         ) {
-          coords = [parseFloat(obj.Longitude), parseFloat(obj.Latitude)];
+          coords = [parseFloat(lon), parseFloat(lat)];
           source = 'coordinates';
         }
-        // Otherwise, try geocoding the address if present
-        else if (obj.Address) {
-          coords = await geocodeAddress(obj.Address);
-          source = 'geocoded';
-          // To avoid rate limits, wait 1 second between requests
-          await new Promise(res => setTimeout(res, 1000));
+        // Otherwise, try geocoding the address if present and non-empty
+        else if (obj.Address && obj.Address.trim()) {
+          coords = await geocodeAddress(obj.Address.trim());
+          if (coords) {
+            source = 'geocoded';
+            // To avoid rate limits, wait 1 second between requests
+            await new Promise(res => setTimeout(res, 1000));
+          }
         }
         // If neither, skip this row
         if (!coords) continue;
@@ -73,7 +78,7 @@
             happyHourStart: obj.HappyHourStart,
             happyHourEnd: obj.HappyHourEnd,
             deal: obj.Deal,
-            source: source // Add the source property
+            source: source
           },
           geometry: {
             type: 'Point',
