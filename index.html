@@ -49,18 +49,19 @@
         let coords = null;
         let source = '';
 
-        // Prefer coordinates if both are present and valid
+        // Try to parse coordinates first
         const lat = obj.Latitude && obj.Latitude.trim();
         const lon = obj.Longitude && obj.Longitude.trim();
         if (
           lat && lon &&
-          !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lon))
+          !isNaN(Number(lat)) && !isNaN(Number(lon))
         ) {
-          coords = [parseFloat(lon), parseFloat(lat)];
+          coords = [Number(lon), Number(lat)];
           source = 'coordinates';
         }
-        // Otherwise, try geocoding the address if present and non-empty
-        else if (obj.Address && obj.Address.trim()) {
+
+        // If coordinates are missing/invalid, try geocoding the address
+        if (!coords && obj.Address && obj.Address.trim()) {
           coords = await geocodeAddress(obj.Address.trim());
           if (coords) {
             source = 'geocoded';
@@ -68,6 +69,7 @@
             await new Promise(res => setTimeout(res, 1000));
           }
         }
+
         // If neither, skip this row
         if (!coords) continue;
 
