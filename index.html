@@ -47,16 +47,19 @@
         });
 
         let coords = null;
+        let source = '';
         // Use coordinates if both are present and valid
         if (
           obj.Latitude && obj.Longitude &&
           !isNaN(parseFloat(obj.Latitude)) && !isNaN(parseFloat(obj.Longitude))
         ) {
           coords = [parseFloat(obj.Longitude), parseFloat(obj.Latitude)];
+          source = 'coordinates';
         }
         // Otherwise, try geocoding the address if present
         else if (obj.Address) {
           coords = await geocodeAddress(obj.Address);
+          source = 'geocoded';
           // To avoid rate limits, wait 1 second between requests
           await new Promise(res => setTimeout(res, 1000));
         }
@@ -69,7 +72,8 @@
             name: obj.Name,
             happyHourStart: obj.HappyHourStart,
             happyHourEnd: obj.HappyHourEnd,
-            deal: obj.Deal
+            deal: obj.Deal,
+            source: source // Add the source property
           },
           geometry: {
             type: 'Point',
@@ -126,8 +130,12 @@
             .setPopup(new maplibregl.Popup({ offset: 25 })
               .setHTML(`<strong>${props.name || 'No Name'}</strong><br>
                         Happy Hour: ${props.happyHourStart || 'N/A'}–${props.happyHourEnd || 'N/A'}<br>
-                        Deal: ${props.deal || 'N/A'}`))
+                        Deal: ${props.deal || 'N/A'}<br>
+                        <em>Source: ${props.source}</em>`))
             .addTo(map);
+
+          // Log to console for debugging
+          console.log(`${props.name}: loaded from ${props.source}`);
         });
       } catch (err) {
         console.error("Error fetching CSV:", err);
