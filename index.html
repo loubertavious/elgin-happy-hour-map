@@ -47,14 +47,20 @@
         });
 
         let coords = null;
-        // Prefer coordinates if present and valid
-        if (obj.Latitude && obj.Longitude && !isNaN(obj.Latitude) && !isNaN(obj.Longitude)) {
+        // Use coordinates if both are present and valid
+        if (
+          obj.Latitude && obj.Longitude &&
+          !isNaN(parseFloat(obj.Latitude)) && !isNaN(parseFloat(obj.Longitude))
+        ) {
           coords = [parseFloat(obj.Longitude), parseFloat(obj.Latitude)];
-        } else if (obj.Address) {
+        }
+        // Otherwise, try geocoding the address if present
+        else if (obj.Address) {
           coords = await geocodeAddress(obj.Address);
           // To avoid rate limits, wait 1 second between requests
           await new Promise(res => setTimeout(res, 1000));
         }
+        // If neither, skip this row
         if (!coords) continue;
 
         features.push({
