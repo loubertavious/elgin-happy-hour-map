@@ -24,7 +24,17 @@
 
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNwlJRxfdrVG6ADRcRA2jJM8Y2M9BSAvd2O6sVoZPqceGXVhVdEBnhryhwp95A4RoS-a1hND217Pgw/pub?output=csv';
 
-    function csvToGeoJson(csvText) {
+    async function geocodeAddress(address) {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+      const response = await fetch(url, { headers: { 'User-Agent': 'ElginBarMap/1.0' } });
+      const data = await response.json();
+      if (data && data[0]) {
+        return [parseFloat(data[0].lon), parseFloat(data[0].lat)];
+      }
+      return null;
+    }
+
+    async function csvToGeoJson(csvText) {
       const lines = csvText.trim().split('\n');
       const headers = lines[0].split(',').map(h => h.trim());
       const features = [];
@@ -36,7 +46,9 @@
           obj[header] = row[j] || '';
         });
 
-        if (!obj.Latitude || !obj.Longitude) continue;
+        if (!obj.Address) continue;
+        const coords = await geocodeAddress(obj.Address);
+        if (!coords) continue;
 
         features.push({
           type: 'Feature',
@@ -48,9 +60,11 @@
           },
           geometry: {
             type: 'Point',
-            coordinates: [parseFloat(obj.Longitude), parseFloat(obj.Latitude)]
+            coordinates: coords
           }
         });
+        // To avoid rate limits, wait 1 second between requests
+        await new Promise(res => setTimeout(res, 1000));
       }
 
       return {
@@ -75,37 +89,38 @@
       return 'gray';
     }
 
-    map.on('load', () => {
-      fetch(csvUrl)
-        .then(response => response.text())
-        .then(csvText => {
-          const geojson = csvToGeoJson(csvText);
-          console.log("Loaded GeoJSON from Google Sheets:", geojson);
+    map.on('load', async () => {
+      try {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
+        const geojson = await csvToGeoJson(csvText);
+        console.log("Loaded GeoJSON from Google Sheets:", geojson);
 
-          geojson.features.forEach(bar => {
-            const coords = bar.geometry.coordinates;
-            const props = bar.properties;
+        geojson.features.forEach(bar => {
+          const coords = bar.geometry.coordinates;
+          const props = bar.properties;
 
-            const color = getStatusColor(props.happyHourStart, props.happyHourEnd);
+          const color = getStatusColor(props.happyHourStart, props.happyHourEnd);
 
-            const marker = document.createElement('div');
-            marker.style.backgroundColor = color;
-            marker.style.width = '20px';
-            marker.style.height = '20px';
-            marker.style.borderRadius = '50%';
-            marker.style.border = '2px solid white';
-            marker.style.boxShadow = '0 0 5px rgba(0,0,0,0.5)';
+          const marker = document.createElement('div');
+          marker.style.backgroundColor = color;
+          marker.style.width = '20px';
+          marker.style.height = '20px';
+          marker.style.borderRadius = '50%';
+          marker.style.border = '2px solid white';
+          marker.style.boxShadow = '0 0 5px rgba(0,0,0,0.5)';
 
-            new maplibregl.Marker(marker)
-              .setLngLat(coords)
-              .setPopup(new maplibregl.Popup({ offset: 25 })
-                .setHTML(`<strong>${props.name || 'No Name'}</strong><br>
-                          Happy Hour: ${props.happyHourStart || 'N/A'}–${props.happyHourEnd || 'N/A'}<br>
-                          Deal: ${props.deal || 'N/A'}`))
-              .addTo(map);
-          });
-        })
-        .catch(err => console.error("Error fetching CSV:", err));
+          new maplibregl.Marker(marker)
+            .setLngLat(coords)
+            .setPopup(new maplibregl.Popup({ offset: 25 })
+              .setHTML(`<strong>${props.name || 'No Name'}</strong><br>
+                        Happy Hour: ${props.happyHourStart || 'N/A'}–${props.happyHourEnd || 'N/A'}<br>
+                        Deal: ${props.deal || 'N/A'}`))
+            .addTo(map);
+        });
+      } catch (err) {
+        console.error("Error fetching CSV:", err);
+      }
     });
   </script>
 </body>
