@@ -49,7 +49,6 @@
         let coords = null;
         let source = '';
 
-        // Try to parse coordinates first
         const lat = obj.Latitude && obj.Latitude.trim();
         const lon = obj.Longitude && obj.Longitude.trim();
         if (
@@ -60,17 +59,14 @@
           source = 'coordinates';
         }
 
-        // If coordinates are missing/invalid, try geocoding the address
         if (!coords && obj.Address && obj.Address.trim()) {
           coords = await geocodeAddress(obj.Address.trim());
           if (coords) {
             source = 'geocoded';
-            // To avoid rate limits, wait 1 second between requests
             await new Promise(res => setTimeout(res, 1000));
           }
         }
 
-        // If neither, skip this row
         if (!coords) continue;
 
         features.push({
@@ -141,7 +137,6 @@
                         <em>Source: ${props.source}</em>`))
             .addTo(map);
 
-          // Log to console for debugging
           console.log(`${props.name}: loaded from ${props.source}`);
         });
       } catch (err) {
