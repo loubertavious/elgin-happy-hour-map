@@ -10,5 +10,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(router);
 
+console.log('config.PORT:', config.PORT, 'process.env.PORT:', process.env.PORT);
+
 const port = config.PORT || 5000;
 app.listen(port, () => console.log(`Listening on port ${port}!`));
