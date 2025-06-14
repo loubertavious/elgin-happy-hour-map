@@ -30,10 +30,11 @@ router.get('/places/nearby', async (req, res) => {
     const response = await axios.post(url, body, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Goog-FieldMask': '*'
+        'X-Goog-FieldMask': 'places.id,places.displayName,places.location'
       },
     });
     res.json(response.data);
+    console.log('Got position:', latitude, longitude);
   } catch (error) {
     console.error('Error fetching places:', error.response?.data || error.message, error.stack);
     res.status(500).json({ error: 'Failed to fetch places', details: error.response?.data || error.message });

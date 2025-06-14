@@ -13,6 +13,14 @@
 	-webkit-text-size-adjust: 100%;
 }
 
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	overflow: hidden; /* Prevent body scrollbars */
+}
+
 body {
 	margin: 0;
 }
@@ -21,12 +29,14 @@ body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
+	width: 100%; /* Ensure #app takes full width */
 }
 
 header {
 	display: flex;
 	justify-content: flex-end;
 	background-color: #673ab8;
+	width: 100%; /* Ensure header takes full width */
 }
 
 header nav {
@@ -48,17 +58,21 @@ header a:hover {
 }
 
 main {
-	flex: auto;
+	flex: 1; /* Make main fill remaining vertical space */
 	display: flex;
-	align-items: center;
-	max-width: 1280px;
-	margin: 0 auto;
-	text-align: center;
+	flex-direction: column; /* Children of main stack vertically */
+	width: 100%; /* Take full width */
+	max-width: none; /* Override previous max-width */
+	margin: 0; /* Override previous margin: 0 auto */
+	align-items: stretch; /* Ensure children stretch to full width */
+	text-align: left; /* Reset text alignment for children */
+	padding: 0; /* Remove any default padding */
 }
 
 @media (max-width: 639px) {
 	main {
-		margin: 2rem;
+		margin: 0;
+		padding: 0;
 	}
 }
 
