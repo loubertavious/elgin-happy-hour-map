@@ -18,7 +18,6 @@ html, body {
 	padding: 0;
 	height: 100%;
 	width: 100%;
-	overflow: hidden; /* Prevent body scrollbars */
 }
 
 body {
@@ -67,6 +66,7 @@ main {
 	align-items: stretch; /* Ensure children stretch to full width */
 	text-align: left; /* Reset text alignment for children */
 	padding: 0; /* Remove any default padding */
+	overflow-y: auto; /* Allow vertical scrolling in main content */
 }
 
 @media (max-width: 639px) {

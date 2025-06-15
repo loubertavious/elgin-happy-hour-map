@@ -1,8 +1,12 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
+const config = require('../config/config');
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY; // Store your key in .env
+// Check for required API key
+if (!config.GOOGLE_API_KEY) {
+    console.error('GOOGLE_API_KEY is not set in environment variables');
+}
 
 router.get('/places/nearby', async (req, res) => {
   const { lat, lng, radius, type, keyword } = req.query;
@@ -11,8 +15,12 @@ router.get('/places/nearby', async (req, res) => {
     return res.status(400).json({ error: 'lat, lng, and radius are required' });
   }
 
+  if (!config.GOOGLE_API_KEY) {
+    return res.status(500).json({ error: 'Google Places API key is not configured' });
+  }
+
   try {
-    const url = `https://places.googleapis.com/v1/places:searchNearby?key=${GOOGLE_API_KEY}`;
+    const url = `https://places.googleapis.com/v1/places:searchNearby?key=${config.GOOGLE_API_KEY}`;
     const body = {
       locationRestriction: {
         circle: {

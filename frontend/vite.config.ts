@@ -6,7 +6,7 @@ export default defineConfig({
 	plugins: [preact()],
 	server: {
 		proxy: {
-			'/places': 'http://localhost:2222'
+			'/places': 'http://localhost:5000'
 		}
 	}
 });
