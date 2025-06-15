@@ -2,10 +2,8 @@
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
 	font-weight: 400;
-
-	color: #222;
-	background-color: #ffffff;
-
+	color: #fff;
+	background-color: #1a1a1a;
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -22,20 +20,22 @@ html, body {
 
 body {
 	margin: 0;
+	background-color: #1a1a1a;
 }
 
 #app {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
-	width: 100%; /* Ensure #app takes full width */
+	width: 100%;
+	background-color: #1a1a1a;
 }
 
 header {
 	display: flex;
 	justify-content: flex-end;
-	background-color: #673ab8;
-	width: 100%; /* Ensure header takes full width */
+	background-color: #2a2a2a;
+	width: 100%;
 }
 
 header nav {
@@ -49,36 +49,43 @@ header a {
 }
 
 header a.active {
-	background-color: #0005;
+	background-color: #3a3a3a;
 }
 
 header a:hover {
-	background-color: #0008;
+	background-color: #3a3a3a;
 }
 
 main {
-	flex: 1; /* Make main fill remaining vertical space */
+	flex: 1;
 	display: flex;
-	flex-direction: column; /* Children of main stack vertically */
-	width: 100%; /* Take full width */
-	max-width: none; /* Override previous max-width */
-	margin: 0; /* Override previous margin: 0 auto */
-	align-items: stretch; /* Ensure children stretch to full width */
-	text-align: left; /* Reset text alignment for children */
-	padding: 0; /* Remove any default padding */
-	overflow-y: auto; /* Allow vertical scrolling in main content */
+	flex-direction: column;
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	align-items: stretch;
+	text-align: left;
+	padding: 0;
+	overflow-y: auto;
+	background-color: #1a1a1a;
+	color: #fff;
+}
+
+/* Map popup styles */
+.bar-popup {
+	background: #2a2a2a;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.bar-popup h3 {
+	color: #181818;
+	font-weight: 600;
 }
 
 @media (max-width: 639px) {
 	main {
 		margin: 0;
 		padding: 0;
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		color: #ccc;
-		background-color: #1a1a1a;
 	}
 }
