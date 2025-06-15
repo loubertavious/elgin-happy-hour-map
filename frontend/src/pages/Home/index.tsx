@@ -45,12 +45,11 @@ const Home = () => {
 		if (!navigator.geolocation) {
 			setError('Geolocation is not supported by your browser.');
 			return;
-		}
+		}	
 		setError('');
 		navigator.geolocation.getCurrentPosition(
 			(position) => {
 				const { latitude, longitude } = position.coords;
-				console.log('Got position:', latitude, longitude);
 				const newCoords = { lat: latitude, lng: longitude };
 				setCoords(newCoords);
 				fetchPlaces(latitude, longitude);

@@ -50,8 +50,8 @@ const Map = ({ coords, places }) => {
     if (coords && mapRef.current) {
       const [lng, lat] = [coords.lng, coords.lat];
       console.log('Map centering to:', lng, lat);
+      mapRef.current.setZoom(11);
       mapRef.current.setCenter([lng, lat]);
-      mapRef.current.setZoom(14);
 
       // Remove old user marker if exists
       if (userMarkerRef.current) {
