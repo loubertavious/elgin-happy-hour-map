@@ -19,7 +19,7 @@ const Home = () => {
 		setError('');
 		try {
 			console.log('Fetching places for:', lat, lng);
-			const data = await getNearbyPlaces(lat, lng, 1500, 'bar');
+			const data = await getNearbyPlaces(lat, lng, 2000, 'bar,pub');
 			console.log('Fetched data:', data);
 			setPlaces(data.places || []);
 		} catch (err) {
@@ -76,7 +76,9 @@ const Home = () => {
 						<li key={place.id} style={{ marginBottom: '1em' }}>
 							<strong>{place.displayName?.text || 'No Name'}</strong><br />
 							<span>ID: {place.id}</span><br />
-							{place.formattedAddress && <span>Address: {place.formattedAddress}</span>}
+							{place.location && typeof place.location.latitude === 'number' && typeof place.location.longitude === 'number' && (
+								<span>Coordinates: {place.location.latitude}, {place.location.longitude}</span>
+							)}
 						</li>
 					))}
 				</ul>

@@ -24,7 +24,9 @@ router.get('/places/nearby', async (req, res) => {
         }
       }
     };
-    if (type) body.includedTypes = [type];
+    if (type) {
+      body.includedTypes = type.split(',');
+    }
     if (keyword) body.query = keyword;
 
     const response = await axios.post(url, body, {
@@ -34,7 +36,6 @@ router.get('/places/nearby', async (req, res) => {
       },
     });
     res.json(response.data);
-    console.log('Got position:', latitude, longitude);
   } catch (error) {
     console.error('Error fetching places:', error.response?.data || error.message, error.stack);
     res.status(500).json({ error: 'Failed to fetch places', details: error.response?.data || error.message });
