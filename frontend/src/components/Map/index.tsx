@@ -41,13 +41,9 @@ const FlashMessage = ({ visible }) => {
       animation: 'fadeInOut 5s ease-in-out',
       fontFamily: 'Arial, sans-serif',
       textTransform: 'uppercase',
-      letterSpacing: '2px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '15px'
+      letterSpacing: '2px'
     }}>
-      <span>IT'S BEER TIME</span>
-      <span style={{ fontSize: '56px' }}>🍺</span>
+      IT'S BEER TIME
     </div>
   );
 };
